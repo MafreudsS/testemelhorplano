@@ -60,27 +60,30 @@ module.exports = class Crawler {
      */
     
     parsePlanInformation($) {
-        var lista = new Array()
-        $('.notMobile').find('ul').first().find('li').each((i, element) => {
+        var internet
+        var ligacao
+        $('.notMobile').find('ul').first().each((i, element) => {
             var item = $(element).text().trim()
-            lista.push(item)
-
+            if(item.match(/[0-9]\GB/g)){
+                internet = (item.match(/[0-9]\GB/g))
+            }
+            if(item.match(/ligações/g)){
+                ligacao = item
+                if(ligacao.match(/ilimitado/g)){
+                ligacao = -1
+                }
+                else 
+                { 
+                    ligacao=ligacao.match(/\d/g).join('')
+                }
+            }
         })
-        var str = lista[0].search('ilimitado')
-        var ax1
-        if(str!=-1){
-            ax1 = -1
-        }
-        else {
-            //ax1=lista[0].match(/\d/g).join('') - > Pegando apenas os numeros da string caso não seja ilimitado.
-            ax1=lista[0]
-        }
            
         // TODO: Fill this object with the parsed data
         return {
            plan_price: $('.fullPrice').text(), 
-           internet: lista[3], 
-           minutes: ax1,
+           internet: internet, 
+           minutes: ligacao,
         }
     }
 
@@ -91,20 +94,13 @@ module.exports = class Crawler {
      * @return array with all benefits
      */
     parsePlanBenefits($) {
-        var lista = new Array()
-        $('.notMobile').find('ul').last().find('li').each((i, element) => {
-            const item = $(element).text().trim()
-            lista.push(item)
+        var beneficio = new Array()
+        $('.notMobile').find('ul').find('li').each((i, element) => {
+            const item = $(element).text()
+            if(item.match(/Roaming/g) || item.match(/SMS/g) || item.match(/Motoboy/g) || item.match(/Seguro/g) || item.match(/Reserva/g)){
+                beneficio.push(item)
+            }
         })
-
-        var lista1 = new Array()
-        $('.notMobile').find('ul').first().find('li').each((i, element) => {
-            var item = $(element).text().trim()
-            lista1.push(item)
-
-        })
-
-        // TODO: Fill this with the benefits parsed
-        return [lista[0],lista[1],lista[2],lista1[1],lista1[2]]
+        return [beneficio]
     }
 }
