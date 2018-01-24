@@ -101,6 +101,6 @@ module.exports = class Crawler {
                 beneficio.push(item)
             }
         })
-        return [beneficio]
+        return beneficio
     }
 }
